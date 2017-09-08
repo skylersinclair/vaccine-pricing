@@ -1,0 +1,43 @@
+# Data used for figure 5.2, effects of gamma variation
+
+set Manufacturers:= infanrix daptacel;
+
+param gamma:= 0; # What we're varying
+param D:= 4000000;
+
+param: P:=
+infanrix  15200000 # The max feasible found when gamma = 0.23
+daptacel  15200000;
+
+param: K:=
+infanrix  4000000
+daptacel  4000000;
+
+param: k_gamma:=
+infanrix  1140000.0
+daptacel  1140000.0;
+
+param: a_u:=
+infanrix  1150000.0
+daptacel  1150000.0;
+
+param: b_u:=
+infanrix  106000.0
+daptacel  106000.0;
+
+param: c_u:=
+infanrix  24300.0
+daptacel  24300.0;
+
+param: a_r:=
+infanrix  2020000.0
+daptacel  2020000.0;
+
+param: b_r:=
+infanrix  106000.0
+daptacel  106000.0;
+
+param: c_r:=
+infanrix  24300.0
+daptacel  24300.0;
+

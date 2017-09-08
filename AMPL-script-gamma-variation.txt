@@ -1,0 +1,36 @@
+option solver minos;
+reset;
+model bertrand-chamberlin-equilibrium-model.mod;
+data bc-equilibrium-model-gamma-variation.dat;
+print “gamma, D, cost, brand, P_i, K_i, publicPrice, privatePrice, publicQuant, privateQuant, privateCapacity, a_u, b_u, c_u, a_r, b_r, c_r, brand, P_i, K_i, publicPrice, privatePrice, publicQuant, privateQuant, privateCapacity, a_u, b_u, c_u, a_r, b_r, c_r”>test_output.txt;
+for {t in 1..100} { 
+solve; 
+printf " %3.2f, %9.0f, %9.0f”,
+gamma,
+D,
+cost > test_output.txt;
+printf {m in Manufacturers}: ", %s, %9.0f, %9.0f, %5.2f, %5.2f, %9.0f, %9.0f, %9.0f, %9.0f, %9.0f, %9.0f, %9.0f, %9.0f, %9.0f, %9.0f", 
+m,
+P[m],
+K[m],
+publicPrice[m],
+privatePrice[m], 
+publicQuant[m], 
+privateQuant[m], 
+privateCapacity[m],
+k_gamma[m],
+a_u[m],
+b_u[m],
+c_u[m],
+a_r[m],
+b_r[m],
+c_r[m] > test_output.txt;
+printf “\n”> test_output.txt;
+let gamma:=0.01*t;
+for {m in Manufacturers}{ let b_r[m]:=(1 / ((1 + gamma) * (1 - gamma))) * 100000};
+for {m in Manufacturers}{ let b_u[m]:=(1 / ((1 + gamma) * (1 - gamma))) * 100000};
+for {m in Manufacturers}{ let c_r[m]:=(gamma / ((1 + gamma) * (1 - gamma))) * 100000};
+for {m in Manufacturers}{ let c_u[m]:=(gamma / ((1 + gamma) * (1 - gamma))) * 100000};
+for {m in Manufacturers}{ let k_gamma[m]:=((a_r[m]*(1+gamma))/gamma)*(1-(2*sqrt(1-gamma))/((2-gamma)*sqrt(1+gamma)))};
+}
+close test_output.txt

@@ -1,0 +1,24 @@
+option solver minos;
+reset;
+model bertrand-chamberlin-equilibrium-model.mod;
+data bc-equilibrium-model-P-variation.dat;
+print “gamma, D, cost, brand, P_i, K_i, publicPrice, privatePrice, publicQuant, privateQuant, privateCapacity, brand, P_i, K_i, publicPrice, privatePrice, publicQuant, privateQuant, privateCapacity”>test_output.txt;
+for {t in 1..101} { 
+solve; 
+printf " %3.2f, %9.0f, %9.0f”,
+gamma,
+D,
+cost > test_output.txt;
+printf {m in Manufacturers}: ", %s, %9.0f, %9.0f, %5.2f, %5.2f, %9.0f, %9.0f, %9.0f", 
+m,
+P[m],
+K[m],
+publicPrice[m],
+privatePrice[m], 
+publicQuant[m], 
+privateQuant[m], 
+privateCapacity[m]> test_output.txt;
+printf “\n”> test_output.txt;
+for {m in Manufacturers}{ let P[m]:=200000*t};
+}
+close test_output.txt
