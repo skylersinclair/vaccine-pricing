@@ -6,8 +6,8 @@ import math
 
 def make_data_file(manu1,
                    manu2,
-                   demand1, # PUBLIC SECTOR demand, not demand over both sectors
-                   demand2,
+                   total_demand1,  
+                   total_demand2,
                    min_profit1,
                    min_profit2,
                    capacity1,
@@ -16,28 +16,56 @@ def make_data_file(manu1,
                    demand_combined = True,
                    scaling=100000,
                    percent_public = 0.57,
-                   T = 0.1):
+                   ):
+    '''
+    This file takes the input
+     - Manufacturer strings manu1 and manu2 for file naming purposes.
+     - Integers total_demand1 and total_demand2 that represent the total
+       (across public and private sectors) demand for each manufacturer. If
+       the total demand used represents the combined demand of both
+       manufacturers, then enter that same number for both manufacturers and
+       set demand_combined to True. If the demand for each manufacturer is
+       distinct, enter each separate value as appropriate and set
+       demand_combined = False.
+     - Integers min_profit1 and min_profit2 indicate the values of minimum
+       profit P desired for manufacturers 1 and 2 respectively.
+     - Integers capacity1 and capacity2 indicate the capacity K of each of
+       the two manufacturers.
+     - Float gamma is the degree of product differentiation, from 0 to 1.
+     - Boolean demand_combined is set to true if the total_demand value
+       entered represents the demand of both manufacturs summed together
+       rather than reporting each demand separately. When demand_combined
+       is false, we assume that total demand is the sum of the two separate
+       demands D = total_demand1 + total_demand2.
+     - Integer scaling is used in b and c calculations and comes from the
+       current method of calculating gamma using number of adverse effects.
+     - Float public_percent is the percentage of vaccines sold in the
+       public sector.
+    '''
 
     # Calculate the needed constants
-    a_u1 = demand1 * 0.5 * scaling
-    a_u2 = demand2 * 0.5 * scaling
-    a_r1 = demand1 * (1/percent_public) * 0.5 * scaling
-    a_r2 = demand2 * (1/percent_public) * 0.5 * scaling
-    b = (1 / ((1 + gamma) * (1 - gamma))) * scaling
+    public_demand1 = total_demand1 * percent_public
+    public_demand2 = total_demand2 * percent_public
+    a_u1 = public_demand1 * 0.5 # a_u uses only public demand
+    a_u2 = public_demand2 * 0.5
+    a_r1 = total_demand1 * 0.5 # a_r uses total demand not private only
+    a_r2 = total_demand2 * 0.5
+    b = (1 / ((1 + gamma) * (1 - gamma))) * scaling 
     c = (gamma / ((1 + gamma) * (1 - gamma))) * scaling
 
-    # Demand is slightly more complicated, since you can have separate demands
-    # reported or one demand for both vaccines reported collectively.
+    # Calculate D, total demand over the entire market
+    # Note that this depends on if total demand is orginally combined for
+    # both manufacturers or reported separately.
     if demand_combined:
-        if demand1 != demand2:
+        if total_demand1 != total_demand2:
             print("Error. Expecting demand1=demand2 if demand_combined=True")
         else:
-            D = demand1
+            D = total_demand1
     else:
-        D = demand1 + demand2 #could be max of both rather than sum?
+        D = (total_demand1 + total_demand2) 
 
     # Create a file to write to
-    f = open('Data_files\{0}_{1}_gamma{2}.txt'.format(manu1,manu2,str(gamma)), 'w')
+    f = open('Generated_Data\{0}_{1}_gamma{2}.txt'.format(manu1,manu2,str(gamma)), 'w')
     print ('opened file')
     
     # Define set(s)
@@ -47,8 +75,6 @@ def make_data_file(manu1,
     # Define parameters that don't depend on the manufacturer
     f.write('param gamma:= {0};\n'.format(str(gamma)))
     f.write('param D:= {0};\n'.format(str(D)))
-    f.write('param T:= {0};\n'.format(str(T)))
-    f.write('param percentPublic:= {0};\n'.format(str(percent_public)))
     f.write('\n')
 
     # Define parameters that do depnd on the manufacturer
@@ -89,48 +115,28 @@ def make_data_file(manu1,
                                                      manu2,
                                                      '%s' % float('%.3g' % c)))
     f.close()
+
     
 def k_gamma(gamma, a):
-    # Note: we only look at the private sector k(gamma), so the
-    # a value we input here is going to be a_r = demand*(1/0.57)*scaling
+    ''' Calculates k_gamma from floats gamma (product diff) and
+        a (demand curve constant). Since we are assuming the public sector
+        buys vaccines first, we will be using a_r to calculate k_gamma and
+        ensure that k_r >= k_gamma.
+    '''
     alpha = a*(1+gamma)
-    #print (alpha)
-    #print ((1-(2*math.sqrt(1-gamma))/((2-gamma)*math.sqrt(1+gamma)))*(1/gamma))
     return (alpha/gamma)*(1-(2*math.sqrt(1-gamma))/((2-gamma)*math.sqrt(1+gamma)))
             
             
-
 if __name__ == "__main__":
-        
+    # This example mimics figure 5.1 and dat file
+    # bc-equilibrium-model-P-variation.dat with minor rounding differences
     make_data_file('infanrix',
-                   'tripedia',
-                   demand1 = 2.3,
-                   demand2 = 2.3,
-                   min_profit1 = 49600000,
-                   min_profit2 = 35200000,
-                   capacity1 = 20000000,
-                   capacity2 = 20000000,
+                   'daptacel',
+                   total_demand1 = 4000000,
+                   total_demand2 = 4000000,
+                   min_profit1 = 0,
+                   min_profit2 = 0,
+                   capacity1 = 4000000,
+                   capacity2 = 4000000,
                    gamma = 0.23,
                    demand_combined = True)
-
-    make_data_file('engerixB',
-                   'recombivaxHB',
-                   demand1 = 5.1,
-                   demand2 = 5.1,
-                   min_profit1 = 49600000,
-                   min_profit2 = 95200000,
-                   capacity1 = 20000000,
-                   capacity2 = 20000000,
-                   gamma = 0.76,
-                   demand_combined = True)
-
-    make_data_file('pentacel',
-                   'pediarix',
-                   demand1 = 4.5,
-                   demand2 = 1.5,
-                   min_profit1 = 35200000,
-                   min_profit2 = 49600000,
-                   capacity1 = 20000000,
-                   capacity2 = 20000000,
-                   gamma = 0.18,
-                   demand_combined = False)
