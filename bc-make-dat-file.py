@@ -1,6 +1,6 @@
 # Python Script to take vaccine data input and turn it into a data
-# file for AMPL
-# Dina Sinclair 3/27/17
+# file for AMPL bertrand-chamberlin equilibrium script
+# Dina Sinclair 9/24/17
 
 import math
 
@@ -139,4 +139,17 @@ if __name__ == "__main__":
                    capacity1 = 4000000,
                    capacity2 = 4000000,
                    gamma = 0.23,
+                   demand_combined = True)
+
+    # This example mimics figure 5.2 and dat file
+    # bc-equilibrium-model-gamma-variation.dat with minor rounding differences
+    make_data_file('infanrix',
+                   'daptacel',
+                   total_demand1 = 4000000,
+                   total_demand2 = 4000000,
+                   min_profit1 = 15200000,
+                   min_profit2 = 15200000,
+                   capacity1 = 4000000,
+                   capacity2 = 4000000,
+                   gamma = 0,
                    demand_combined = True)
