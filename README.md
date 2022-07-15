@@ -1,6 +1,6 @@
 ## Vaccine Pricing Models in AMPL
 
-Dina Sinclair 5/31/17
+Skyler Sinclair 5/31/17
 
 This is the code needed to reproduce figures 5.1 and 5.2 of the research project [Incorporating the Centers for Disease Control and Prevention into Vaccine Pricing Models](https://scholarship.claremont.edu/hmc_theses/111/) that makes use of quadratic programming and game theory to better understand pricing in vaccine dupoplies.
 
